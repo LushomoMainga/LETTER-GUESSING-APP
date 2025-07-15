@@ -1,0 +1,112 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <ctime>
+#include <cstdlib>
+#include <random>
+
+using namespace std;
+
+const int TOTAL_CHARACTERS = 21;
+const int PILE_SIZE = 7;
+
+char characters[TOTAL_CHARACTERS] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'};
+
+void displayCharacters(char *chars) {
+    cout << "Characters: ";
+    for (int i = 0; i < TOTAL_CHARACTERS; i++) {
+        cout << chars[i] << " ";
+    }
+    cout << endl << endl;
+}
+
+void divideIntoPiles(char *chars, vector<char> &pile1, vector<char> &pile2, vector<char> &pile3) {
+    for (int i = 0; i < TOTAL_CHARACTERS; i++) {
+        if (i % 3 == 0) {
+            pile1.push_back(chars[i]);
+        } else if (i % 3 == 1) {
+            pile2.push_back(chars[i]);
+        } else {
+            pile3.push_back(chars[i]);
+        }
+    }
+}
+
+void displayPiles(vector<char> pile1, vector<char> pile2, vector<char> pile3) {
+    cout << "Piles:" << endl;
+    cout << "Pile 1: ";
+    for (char c : pile1) {
+        cout << c << " ";
+    }
+    cout << endl;
+    cout << "Pile 2: ";
+    for (char c : pile2) {
+        cout << c << " ";
+    }
+    cout << endl;
+    cout << "Pile 3: ";
+    for (char c : pile3) {
+        cout << c << " ";
+    }
+    cout << endl << endl;
+}
+
+void combinePiles(vector<char> pile1, vector<char> pile2, vector<char> pile3, char *chars, int selectedPile) {
+    if (selectedPile == 1) {
+        for (int i = 0; i < PILE_SIZE; i++) {
+            chars[i] = pile2[i];
+            chars[i + PILE_SIZE] = pile1[i];
+            chars[i + 2 * PILE_SIZE] = pile3[i];
+        }
+    } else if (selectedPile == 2) {
+        for (int i = 0; i < PILE_SIZE; i++) {
+            chars[i] = pile3[i];
+            chars[i + PILE_SIZE] = pile2[i];
+            chars[i + 2 * PILE_SIZE] = pile1[i];
+        }
+    } else {
+        for (int i = 0; i < PILE_SIZE; i++) {
+            chars[i] = pile1[i];
+            chars[i + PILE_SIZE] = pile3[i];
+            chars[i + 2 * PILE_SIZE] = pile2[i];
+        }
+    }
+}
+
+void display_chars() {
+    srand(time(0));
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(characters, characters + TOTAL_CHARACTERS, g);
+    displayCharacters(characters);
+}
+
+int main() {
+    char playAgain = 'y';
+    while (playAgain == 'y' || playAgain == 'Y') {
+        system("clear"); // for Linux/macOS or system("cls") for Windows
+        cout << "Welcome to the Character Guessing Game!" << endl << endl;
+        display_chars();
+cout << "My goal is to guess your letter." << endl << endl;
+cout << "all you have to do is tell me"<<endl<<" which pile it lies in." << endl << endl;
+        
+        for (int round = 0; round < 3; round++) {
+            vector<char> pile1, pile2, pile3;
+            divideIntoPiles(characters, pile1, pile2, pile3);
+            displayPiles(pile1, pile2, pile3);
+            
+            int selectedPile;
+            cout << "Enter the number of the pile where your character is (1/2/3): ";
+            cin >> selectedPile;
+            combinePiles(pile1, pile2, pile3, characters, selectedPile);
+        }
+        
+        cout << "Final arrangement:" << endl;
+        displayCharacters(characters);
+        cout << "Your character is: " << characters[10] << endl << endl;
+        
+        cout << "Do you want to play again? (y/n): ";
+        cin >> playAgain;
+    }
+    return 0;
+}
